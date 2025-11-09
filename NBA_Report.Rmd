@@ -1,0 +1,123 @@
+---
+title: "NBA_Report"
+author: "Rita Wang, Teddy Guo, Sara Baji, Camila Diaz"
+date: "`r Sys.Date()`"
+params:
+  data_path: "Midterm_project/raw_data/nba_2025-10-30.csv"
+  codebook_path: "Midterm_project/nba_codebook.xlsx"
+  top_n: 10
+  cutoff_date: "October 30, 2025"
+  outcome_label: "points per 36 minutes"
+fontsize: 11pt
+geometry: margin=1in
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: "show"
+    theme: cosmo
+    highlight: tango
+    df_print: paged
+    self_contained: true 
+---
+
+```{r, load-packages, include=FALSE}
+library(dplyr)
+library(tidyverse)
+library(here)
+library(gtsummary)
+library(gt)
+library(kableExtra)
+```
+
+```{r, setup, include=FALSE}
+knitr::opts_knit$set(root.dir = here::here())
+data_path <- here::here(params$data_path)
+codebook_path <- here::here(params$codebook_path)
+```
+
+# Project overview
+
+This project analyzes NBA player performance data sourced from [Basketball Reference](https://www.basketball-reference.com/leagues/NBA_2026_per_minute.html), focusing on **per-36-minute statistics** to compare players on an equal playing-time basis as of `r params$cutoff_date`. The goal is to rank the top `r params$top_n` players using key metrics such as points, assists, rebounds, and efficiency, then summarize overall trends through tables and visualizations. Our primary outcome is `r params$outcome_label`. Subsequent sections will expand on these analyses and introduce a simple predictive model to examine how shooting, rebounding, and passing metrics collectively explain a player's overall scoring output.
+
+# Data Description
+```{r, read-data, message=FALSE, warning=FALSE}
+nba_data <- readr::read_csv(data_path)
+head(nba_data)
+```
+
+Each row represents one player's averaged performance metrics.
+
+Key variables include:
+
+- **Points, assists, and rebounds per 36 minutes** — indicators of overall contribution.  
+- **Field goal, 3-point, and free throw percentages** — measures of shooting efficiency.  
+- **Blocks, steals, turnovers, and fouls** — indicators of defensive and possession-related performance.  
+- **Effective field goal percentage** — a combined efficiency measure that adjusts for the added value of 3-point shots.  
+
+These variables allow for ranking players, summarizing league-wide performance patterns, and later building a model to explore how shooting, rebounding, and passing relate to overall scoring output.
+
+## Summary Statistics
+
+```{r, summary-stats, message=FALSE, warning=FALSE}
+table1<- readRDS(here::here("output/table1.rds"))
+table1
+```
+
+Table 1 summarizes overall player performance across 422 NBA athletes. The averages show that players typically contribute around **15 points**, **3 assists**, and **6 rebounds**, though the wide interquartile ranges highlight large variation in offensive roles and productivity. Shooting efficiency is generally consistent league-wide, with **field-goal accuracy near 0.46**, **three-point accuracy around 0.32**, and **free-throw accuracy near 0.76**, resulting in an **effective field-goal rate of roughly 0.54**. These numbers suggest that while elite scorers push the upper range of these metrics, most players maintain balanced scoring efficiency. 
+
+
+## Graphical Summaries
+
+### Histogram
+
+* Description of the histogram (ideally some important variable about the player statistics)
+
+```{r, histogram, echo=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+### Scatter plot
+
+* Description of the scatter plot (ideally showing important relationships that contribute to our analysis goal - how efficiency and contribution link to scoring)
+
+* please do at least 2 scatter plots
+
+```{r, scatterplots, echo=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+# Player Ranking & Performance Summary 
+
+We next rank the Top `r params$top_n` players and interpret `r params$outcome_label` as of `r params$cutoff_date`.
+
+```{r, player-ranking, echo=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+## Interpretation
+
+* Add interpretation of your ranking anslysis.
+
+
+# Modeling overview
+
+Building on the descriptive summaries above, we will use a linear regression model to evaluate how different aspects of player performance contribute to scoring efficiency. Specifically, we examine how shooting accuracy (field-goal and three-point percentage), rebounding, and passing metrics together explain variation in points per 36 minutes. 
+
+## Regression Modeling
+
+```{r, regression-model, echo=TRUE, message=FALSE, warning=FALSE}
+# build you simple linear regresison model here, you can build complicated models if you want, make sure to adjust the modeling overview if you dp.
+
+# include diagnostic and graphs (e.g., predicted vs. actual)
+```
+
+## Interpretation
+
+* add a paragraph here about your regression model interpretation
+
+
+# Summary of findings 
+

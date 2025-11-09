@@ -1,0 +1,224 @@
+---
+title: "Midterm Report Planning - NBA Player Stats"
+author: "Rita Wang, Teddy Guo, Sara Baji, Camila Diaz"
+date: "`r Sys.Date()`"
+params:
+  data_path: "Midterm_project/raw_data/nba_2025-10-30.csv"
+  codebook_path: "Midterm_project/nba_codebook.xlsx"
+  top_n: 10
+  cutoff_date: "October 30, 2025"
+  outcome_label: "points per 36 minutes"
+fontsize: 11pt
+geometry: margin=1in
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: "show"
+    theme: cosmo
+    highlight: tango
+    df_print: paged
+    self_contained: true 
+---
+
+```{r, load-packages, include=FALSE}
+library(dplyr)
+library(tidyverse)
+library(here)
+library(gtsummary)
+library(gt)
+library(kableExtra)
+```
+
+```{r, setup, include=FALSE}
+knitr::opts_knit$set(root.dir = here::here())
+data_path <- here::here(params$data_path)
+codebook_path <- here::here(params$codebook_path)
+```
+
+# Team Designations
+
+Team leader: Rita Wang - Compiling & Integration
+
+Coders: 
+
+  Teddy Guo - Player Ranking & Performance Summary
+  
+  Sara Baji - Regression Modeling
+  
+  Camila Diaz - Graphical summaries & Summary of Findings
+  
+# Dataset selected 
+
+**NBA Player Stats**
+
+# Project Organization
+
+## Each coder's code and outputs
+
+- **code/graph.r/**: contains Camila's code for graphical summaries
+  **output/graphs.png/**: stores Camila's rendered figures and tables  
+- **code/ranking.r/**: contains Teddy's code for player ranking and performance summary  
+  **output/ranking.png/**: stores Teddy' table and plots
+- **code/regression.r/**: contains Sara's code for regression modeling  
+  **output/regression.rds/**: stores Sara's regression outputs
+
+## Assignment file
+
+- **report_planning.Rmd**: the parameterized master report that integrates all sections and uses the YAML parameters (`params$top_n`, `params$cutoff_date`, and `params$outcome_label`)  
+- **report.html**: the final rendered report produced using the `make` command
+
+## Other data and miscellaneous/supporting code
+
+- **raw_data/**: contains the raw dataset (`nba_2025-10-30.csv`) and the codebook (`nba_codebook.xlsx`)  
+- **config/**: may include alternative configuration or parameter files for testing  
+- **root directory**: contains `Makefile`, `README.md`,`report_planning.Rmd`, `report.Rmd`, `report.html`
+- **.git**: hidden folder automatically created by Git that tracks all version control history, branches, and commits for collaboration and reproducibility
+
+# Customization
+
+The current configuration includes the following parameters:
+
+- **`params$top_n`**: controls how many top players are displayed in the ranking section (e.g., Top 10, Top 15, etc.). Increasing this number expands the ranking table and related summaries; decreasing it produces a more concise report focused on only the highest-performing players.  
+
+- **`params$cutoff_date`**: indicates the reference date for when the dataset was last obtained (currently "October 30, 2025"). This parameter is used to update captions and narrative text so that readers clearly understand the time frame of the data being analyzed. In future iterations, this can be used to analyze an updated NBA dataset with a later cutoff date.
+
+- **`params$outcome_label`**: specifies the primary performance outcome being analyzed (currently "points per 36 minutes"). Modifying this parameter would change the outcome variable analyzed and update all related text, model summaries, and figure titles accordingly.
+
+Together, these parameters should allow users to rebuild the report with different settings to explore alternative scenarios or new versions of the NBA dataset.
+
+# Team Ground Rules
+
+## Respect and Communication
+- Respect the views, time, and contributions of all group members.  
+- Communicate openly and professionally across all channels.  
+- Listen carefully and provide constructive feedback actively and thoughtfully.  
+
+## Participation
+- Each member is responsible for completing their assigned tasks on time.  
+- Notify the group promptly if any of us encounter any issues or delays.  
+- Everyone is expected to contribute equally to discussions and deliverables.  
+
+## Deadlines and Deliverables
+- Draft versions of individual sections or code should be completed before the final submission deadline.  
+- Allow sufficient time for review, feedback, and revisions before submission.  
+- All submissions should meet agreed-upon quality standards.  
+
+## Collaboration and Decision-Making
+- Major decisions (e.g., changes to code, structure, or analysis) should be discussed and agreed upon by all members.  
+- Use shared communication tools to coordinate work and updates.  
+- Respect consensus and majority decisions.
+
+
+
+
+**Rest of these are our working template, please note that these are just examples, we will need to build separate code file for all sections **
+
+# Project overview
+
+This project analyzes NBA player performance data sourced from [Basketball Reference](https://www.basketball-reference.com/leagues/NBA_2026_per_minute.html), focusing on **per-36-minute statistics** to compare players on an equal playing-time basis as of `r params$cutoff_date`. The goal is to rank the top `r params$top_n` players using key metrics such as points, assists, rebounds, and efficiency, then summarize overall trends through tables and visualizations. Our primary outcome is `r params$outcome_label`. Subsequent sections will expand on these analyses and introduce a simple predictive model to examine how shooting, rebounding, and passing metrics collectively explain a player's overall scoring output.
+
+# Data Description
+```{r, read-data, message=FALSE, warning=FALSE}
+nba_data <- readr::read_csv(data_path)
+head(nba_data)
+```
+
+Each row represents one player's averaged performance metrics.
+
+Key variables include:
+
+- **Points, assists, and rebounds per 36 minutes** — indicators of overall contribution.  
+- **Field goal, 3-point, and free throw percentages** — measures of shooting efficiency.  
+- **Blocks, steals, turnovers, and fouls** — indicators of defensive and possession-related performance.  
+- **Effective field goal percentage** — a combined efficiency measure that adjusts for the added value of 3-point shots.  
+
+These variables allow for ranking players, summarizing league-wide performance patterns, and later building a model to explore how shooting, rebounding, and passing relate to overall scoring output.
+
+## Summary Statistics - by xx
+
+```{r, summary-stats, message=FALSE, warning=FALSE}
+theme_gtsummary_journal(journal = "jama")
+theme_gtsummary_compact()
+
+vars <- c("PTS","AST","TRB","FG%","3P%","FT%","eFG%")
+vars <- intersect(vars, names(nba_data))
+
+tbl1 <-
+  nba_data %>% select(all_of(vars)) %>% 
+  tbl_summary(
+    type = all_continuous() ~ "continuous2",
+    statistic = all_continuous() ~ c("{mean} ({sd})", "{median} [{p25}, {p75}]"),
+    digits = all_continuous() ~ 2,
+    missing = "no",
+    label = list(
+      PTS   ~ "Points per 36 min",
+      AST   ~ "Assists per 36 min",
+      TRB   ~ "Total Rebounds per 36 min",
+      `FG%`  ~ "Field Goal Rate",
+      `3P%`  ~ "3-Point Rate",
+      `FT%`  ~ "Free Throw Rate",
+      `eFG%` ~ "Effective FG Rate"))
+
+tbl1 %>% 
+  modify_header(label ~ "**Variable**", stat_0 ~ "**Summary**") %>% 
+  bold_labels() %>% 
+  as_gt() %>% 
+  tab_caption("Table 1. Key per–36-minute statistics") %>% 
+  tab_options(table.align = "center", table.width = pct(50))
+```
+
+## Graphical Summaries - by xx (input your name here)
+
+### Histogram
+
+* Description of the histogram (ideally some important variable about the player statistics)
+
+```{r, histogram, echo=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+### Scatter plot
+
+* Description of the scatter plot (ideally showing important relationships that contribute to our analysis goal - how efficiency and contribution link to scoring)
+
+* please do at least 2 scatter plots
+
+```{r, scatterplots, echo=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+# Player Ranking & Performance Summary - by xx (input your name here)
+
+We next rank the Top `r params$top_n` players and interpret `r params$outcome_label` as of `r params$cutoff_date`.
+
+```{r, player-ranking, echo=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+## Interpretation
+
+* Add interpretation of your ranking anslysis.
+
+
+# Modeling overview - by xx (input your name here)
+
+Building on the descriptive summaries above, we will use a linear regression model to evaluate how different aspects of player performance contribute to scoring efficiency. Specifically, we examine how shooting accuracy (field-goal and three-point percentage), rebounding, and passing metrics together explain variation in points per 36 minutes. 
+
+## Regression Modeling
+
+```{r, regression-model, echo=TRUE, message=FALSE, warning=FALSE}
+# build you simple linear regresison model here, you can build complicated models if you want, make sure to adjust the modeling overview if you dp.
+
+# include diagnostic and graphs (e.g., predicted vs. actual)
+```
+
+## Interpretation
+
+* add a paragraph here about your regression model interpretation
+
+
+# Summary of findings 
+
