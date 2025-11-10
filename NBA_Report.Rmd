@@ -106,20 +106,18 @@ We next rank the Top `r params$top_n` players and interpret `r params$outcome_la
 
 Building on the descriptive summaries above, we will use a linear regression model to evaluate how different aspects of player performance contribute to scoring efficiency. Specifically, we examine how shooting accuracy (field-goal and three-point percentage), rebounding, and passing metrics together explain variation in points per 36 minutes. 
 
+
 ## Regression Modeling
 
 ```{r, regression-model, echo=TRUE, message=FALSE, warning=FALSE}
-source(here::here("code", "04_regression.R"))
-reg_results <- run_regression_analysis(nba_data)
+reg_results <- readRDS(here::here("output", "regression.rds"))
 
-# Coefficients
 reg_results$coef_table %>%
   knitr::kable(
     digits = 3,
     caption = "Regression model predicting points per 36 minutes."
   )
 
-# Model fit
 reg_results$fit_stats %>%
   dplyr::select(r.squared, adj.r.squared, AIC, BIC) %>%
   knitr::kable(
