@@ -26,9 +26,6 @@ output:
 library(dplyr)
 library(tidyverse)
 library(here)
-library(gtsummary)
-library(gt)
-library(kableExtra)
 ```
 
 ```{r, setup, include=FALSE}

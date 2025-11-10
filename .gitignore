@@ -2,3 +2,4 @@
 output/*.rds
 output/*.png
 NBA_Report.html
+.Rhistory
