@@ -2,7 +2,8 @@
 
 
 
-
+output/ranking_plot.png: code/03_ranking.R raw_data/nba_2025-10-30.csv
+	Rscript code/03_ranking.R
 
 
 output/table1.rds: code/01_summary_table.R raw_data/nba_2025-10-30.csv

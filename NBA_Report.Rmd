@@ -90,14 +90,24 @@ Table 1 summarizes overall player performance across 422 NBA athletes. The avera
 We next rank the Top `r params$top_n` players and interpret `r params$outcome_label` as of `r params$cutoff_date`.
 
 ```{r, player-ranking, echo=TRUE, message=FALSE, warning=FALSE}
+#|fig.align = "center",
+#| out.width = "600px"
 
+knitr::include_graphics(
+ here::here("output/ranking_plot.png")
+)
 ```
 
 
 ## Interpretation
 
-* Add interpretation of your ranking anslysis.
+* The heatmap above provides a comparative view of the top `r params$top_n` NBA players’ performance across seven per–36-minute metrics: points (PTS), assists (AST), total rebounds (TRB), field goal percentage (FG%), three-point percentage (3P%), free throw percentage (FT%), and effective field goal percentage (eFG%).  
 
+Each cell’s shading represents the player’s **relative performance** after rescaling all metrics between 0 and 1. Darker colors indicate stronger performance compared to others, while **gray cells indicate missing or unavailable data**. Players are ordered by their original **points per 36 minutes (PTS)** as of `r params$cutoff_date`.
+
+From the visualization, **Pat Connaughton (Charlotte Hornets)** leads in **points per 36 minutes** and maintains competitive efficiency metrics. **Tolu Smith (Detroit Pistons)** and **Luka Dončić (Lakers)** also show balanced strengths across multiple categories. In contrast, players such as **Anthony Gill (Washington Wizards)** and **Myron Gardner (Miami Heat)** exhibit weaker or less consistent performance across the selected metrics.
+
+Overall, the figure highlights contrasts between the top 10 players who maintain balanced efficiency across multiple performance metrics and those who excel primarily in one or two specialized areas.
 
 # Modeling overview
 
