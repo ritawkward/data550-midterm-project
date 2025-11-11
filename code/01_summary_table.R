@@ -3,7 +3,7 @@ library(gt)
 library(kableExtra)
 
 here::i_am("code/01_summary_table.R")
-nba_data <- readr::read_csv(here::here("raw_data/nba_2025-10-30.csv"), show_col_types = FALSE)
+nba_data <- readr::read_csv(here::here("data/raw_nba_2025-10-30.csv"), show_col_types = FALSE)
 
 theme_gtsummary_journal(journal = "jama")
 theme_gtsummary_compact()

@@ -3,8 +3,8 @@ title: "NBA_Report"
 author: "Rita Wang, Teddy Guo, Sara Baji, Camila Diaz"
 date: "`r Sys.Date()`"
 params:
-  data_path: "raw_data/nba_2025-10-30.csv"
-  codebook_path: "raw_data/nba_codebook.xlsx"
+  data_path: "data/raw_nba_2025-10-30.csv"
+  codebook_path: "nba_codebook.xlsx"
   top_n: 10
   cutoff_date: "October 30, 2025"
   outcome_label: "points per 36 minutes"
@@ -26,9 +26,6 @@ output:
 library(dplyr)
 library(tidyverse)
 library(here)
-library(gtsummary)
-library(gt)
-library(kableExtra)
 ```
 
 ```{r, setup, include=FALSE}
@@ -59,7 +56,6 @@ Key variables include:
 These variables allow for ranking players, summarizing league-wide performance patterns, and later building a model to explore how shooting, rebounding, and passing relate to overall scoring output.
 
 ## Summary Statistics
-
 ```{r, summary-stats, message=FALSE, warning=FALSE}
 table1<- readRDS(here::here("output/table1.rds"))
 table1
@@ -108,40 +104,20 @@ Building on the descriptive summaries above, we will use a linear regression mod
 
 
 ## Regression Modeling
-
 ```{r, regression-model, echo=TRUE, message=FALSE, warning=FALSE}
-reg_results <- readRDS(here::here("output", "regression.rds"))
+coef_tab <- readRDS(here::here("output", "reg_coef_table.rds"))
+fit_tab  <- readRDS(here::here("output", "reg_fit_stats.rds"))
 
-reg_results$coef_table %>%
-  knitr::kable(
-    digits = 3,
-    caption = "Regression model predicting points per 36 minutes."
-  )
+coef_tab %>% 
+  knitr::kable(digits = 3, caption = "Regression coefficients for predicting points per 36 minutes.")
 
-reg_results$fit_stats %>%
-  dplyr::select(r.squared, adj.r.squared, AIC, BIC) %>%
-  knitr::kable(
-    digits = 3,
-    caption = "Model fit statistics."
-  )
+fit_tab %>% 
+  select(r.squared, adj.r.squared, AIC, BIC) %>% 
+  knitr::kable(digits = 3, caption = "Model fit statistics.")
 ```
 
 ```{r, regression-plot-colored, echo=TRUE, message=FALSE, warning=FALSE}
-library(broom)
-library(ggplot2)
-
-# Get the data actually used in the model
-plot_data <- augment(reg_results$model)
-
-ggplot(plot_data, aes(x = .fitted, y = PTS)) +
-  geom_point(color = "#2E86AB", alpha = 0.6) +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray40") +
-  labs(
-    x = "Predicted points per 36 minutes",
-    y = "Actual points per 36 minutes",
-    title = "Predicted vs actual points per 36 minutes"
-  ) +
-  theme_minimal()
+knitr::include_graphics(here::here("output", "reg_pred_vs_actual.png"))
 ```
 
 ## Interpretation

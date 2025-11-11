@@ -4,7 +4,7 @@
 
 ### `code/01_summary_table.R`
 
--   Reads `raw_data/nba_2025-10-30.csv`.
+-   Reads `data/raw_nba_2025-10-30.csv`.
 -   Creates a descriptive summary table (Table 1) of NBA player characteristics using **gtsummary**.
 -   Saves outputs as **`output/table1.rds`**.
 
@@ -13,6 +13,10 @@
 ### `code/03_ranking.R`
 
 ### `code/04_regression.R`
+
+-   Reads `data/raw_nba_2025-10-30.csv`.
+-   Fits a linear regression model predicting points per 36 minutes from shooting and assist metrics.
+-   Saves model objects, summary tables, and the **colored Predicted vs. Actual plot** to the `output/` folder.
 
 
 ------------------------------------------------------------------------
