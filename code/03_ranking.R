@@ -6,6 +6,8 @@ library(tidyr)
 library(ggplot2)
 
 top_n <- 10
+top_n_env <- Sys.getenv("TOP_N")
+if (top_n_env != "") top_n <- as.integer(top_n_env)
 
 nba_top <- nba_data %>%
   arrange(desc(PTS)) %>% 
@@ -26,7 +28,7 @@ hm <- ggplot(nba_top_scaled, aes(x = Metric, y = Player, fill = Scaled_Value)) +
   scale_y_discrete(limits = rev(levels(nba_top_scaled$Player))) +
   scale_fill_gradient(low = "lightblue", high = "darkblue") +
   labs(
-    title = "Top 10 Players – Performance Summary Heatmap",
+    title = paste0("Top", top_n, " Players – Performance Summary Heatmap"),
     subtitle = "Players ordered by original PTS (non-scaled)",
     x = "Performance Metric",
     y = "Player (Team)",

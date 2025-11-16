@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 params:
   data_path: "data/raw_nba_2025-10-30.csv"
   codebook_path: "nba_codebook.xlsx"
-  top_n: 10
+  top_n: !r as.integer(Sys.getenv("TOP_N", "10"))
   cutoff_date: "October 30, 2025"
   outcome_label: "points per 36 minutes"
 fontsize: 11pt
@@ -69,29 +69,23 @@ Table 1 summarizes overall player performance across 422 NBA athletes. The avera
 ### Histogram
 
 This histogram shows the distribution of points per 36 minutes.
-
 ```{r, histogram, echo=TRUE, message=FALSE, warning=FALSE}
 #| fig.align="center"
 knitr::include_graphics(here::here("output/histogram_pts.png"))
-
 ```
 
 ### Scatter plot
 
 This plot shows how players’ scoring relates to their effective field goal percentage.
-
 ```{r, scatter-1, echo=TRUE, message=FALSE, warning=FALSE}
 #| fig.align="center"
 knitr::include_graphics(here::here("output/scatter_pts_efg.png"))
-
 ```
 
 This plot shows how players’ scoring relates to their assists.
-
 ```{r, scatter-2, echo=TRUE, message=FALSE, warning=FALSE}
 #| fig.align="center"
 knitr::include_graphics(here::here("output/scatter_pts_ast.png"))
-
 ```
 
 ### Interpretation
@@ -101,20 +95,16 @@ The histogram shows most players score around 15 points per 36 minutes. The scat
 # Player Ranking & Performance Summary - By Teddy Guo
 
 We next rank the Top `r params$top_n` players and interpret `r params$outcome_label` as of `r params$cutoff_date`.
-
 ```{r, player-ranking, echo=TRUE, message=FALSE, warning=FALSE}
 #|fig.align = "center",
 #| out.width = "600px"
-
-knitr::include_graphics(
- here::here("output/ranking_plot.png")
-)
+knitr::include_graphics(here::here("output/ranking_plot.png"))
 ```
 
 
 ## Interpretation
 
-* The heatmap above provides a comparative view of the top `r params$top_n` NBA players’ performance across seven per–36-minute metrics: points (PTS), assists (AST), total rebounds (TRB), field goal percentage (FG%), three-point percentage (3P%), free throw percentage (FT%), and effective field goal percentage (eFG%).  
+The heatmap above provides a comparative view of the top `r params$top_n` NBA players’ performance across seven per–36-minute metrics: points (PTS), assists (AST), total rebounds (TRB), field goal percentage (FG%), three-point percentage (3P%), free throw percentage (FT%), and effective field goal percentage (eFG%).
 
 Each cell’s shading represents the player’s **relative performance** after rescaling all metrics between 0 and 1. Darker colors indicate stronger performance compared to others, while **gray cells indicate missing or unavailable data**. Players are ordered by their original **points per 36 minutes (PTS)** as of `r params$cutoff_date`.
 
@@ -150,4 +140,13 @@ The linear regression model explained approximately 41% of the variation in play
 
 # Summary of findings 
 
-Overall, the analysis shows that players who shoot efficiently, make plays for teammates, and contribute on the boards tend to have higher scoring averages per 36 minutes. Shooting accuracy, measured through field-goal and three-point percentages, appears to have the strongest impact on scoring performance. Assists and rebounds also play meaningful roles, suggesting that well-rounded players who both create and capitalize on opportunities are generally the most productive scorers.
+Overall, this snapshot of NBA per-36-minute statistics suggests that high scorers tend to pair **efficient shooting** with at least moderate playmaking rather than relying on volume alone.
+
+From the descriptive table and exploratory plots, we saw that:
+- Points per 36 minutes vary widely across players, with a small group of high-end scorers in the right tail of the distribution.
+- Points per 36 minutes increase with effective field goal percentage, indicating that efficient shot selection is strongly linked to scoring output.
+- There is also a positive, though more modest, association between assists per 36 minutes and scoring, consistent with the idea that players who create offense for others are often in positions to score themselves.
+
+The ranking heatmap highlighted that the top scorers are typically strong in **multiple** dimension, scoring, 3-point shooting, and free-throw accuracy, rather than excelling in only one metric. The regression model further supported this pattern: better shooting percentages and higher assist rates were associated with more points per 36 minutes, whereas rebounds played a comparatively smaller role in predicting scoring after accounting for shooting and playmaking.
+
+Taken together, among this group of NBA players, those who combine efficient shooting with active involvement in the offense (via assists and other creation-related stats) are generally the most productive scorers on a per-36-minute basis. This interpretation is specific to a single-date snapshot and assumes that per-36-minute scaling reasonably approximates what players would do with more playing time.
